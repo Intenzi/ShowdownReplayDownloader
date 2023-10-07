@@ -4,17 +4,26 @@ An _actual_ Pokémon Showdown Replay Downloader.
 
 📥Download any PS replay via its link into **mp4/webm** format.
 
-Utilise as a cmd line application with high customization options and the ability to batch download replays simultaneously.
+Utilise as a cmd line application with various customization options and the ability to batch download replays simultaneously.
 
-Alternatively deploy as a discord bot, upload and save replays to the cloud via discord cdn while sharing with friends.
+Alternately deploy as a discord bot, upload and save replays to the cloud via discord cdn while sharing with friends.
 
 ## Demonstration
 
 [🔗 Invite the already hosted discord bot for instant use!](https://discord.com/api/oauth2/authorize?client_id=1149183749167251489&permissions=0&scope=applications.commands%20bot)
+(Both videos below have been compressed to under 10mb)
 
 -   ### Discord Bot
 
+
+https://github.com/Intenzi/ShowdownReplayDownloader/assets/62426443/ab350c7c-a392-40c6-9df1-f35ab4c11d11
+
+
 -   ### Command Line Application
+
+
+https://github.com/Intenzi/ShowdownReplayDownloader/assets/62426443/2464cc76-6b52-40a6-a8f5-f5c7bfabf0a1
+
 
 ## Setup
 
