@@ -257,13 +257,19 @@ const argv = yargs(process.argv.slice(2))
                 "Bulk recording is disabled (set to 1). Thus replays will be downloaded one at a time."
             )
     }
+
+    width = 647 ? nochat : 1187
+    height = 545
+    const args = [`--window-size=${width},${height}`, `--headless=new`]
+    if (noaudio) args.push(`--mute-audio`)
+
     const browser = await launch({
         executablePath: require("puppeteer").executablePath(),
         defaultViewport: {
             width: 0,
             height: 364,
         },
-        args: [`--window-size=${!nochat ? 1187 : 647},545`, `--headless=new`],
+        args: args,
     })
     if (links.length > 1 && (bulk === "all" || bulk > 1)) {
         let bulkRecord = []
