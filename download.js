@@ -258,7 +258,7 @@ const argv = yargs(process.argv.slice(2))
             )
     }
 
-    width = 647 ? nochat : 1187
+    width = nochat ? 647 : 1187
     height = 545
     const args = [`--window-size=${width},${height}`, `--headless=new`]
     if (noaudio) args.push(`--mute-audio`)
