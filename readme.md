@@ -75,7 +75,7 @@ The cmd line application comes with various options to customize the way you wan
     -   Default: `normal`
 -   --theme (-t)
     -   Color scheme of ps (light/dark)
-    -   Default: `dark`
+    -   Default: `light`
 -   --nomusic
     -   Disable music
 -   --noaudio
