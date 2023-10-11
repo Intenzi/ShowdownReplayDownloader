@@ -79,6 +79,7 @@ async function download(link, browser, nomusic, noaudio, theme, speed) {
             `./replays/replay-${fileId}-temp.webm`
         )
         const page = await browser.newPage()
+        await page.setViewport({ width: 1920, height: 1080 }) // 1920 x 1080 screen resolution
         await page.goto(link, {
             waitUntil: "load",
         })
@@ -258,17 +259,14 @@ const argv = yargs(process.argv.slice(2))
             )
     }
 
-    width = nochat ? 647 : 1187
-    height = 545
-    const args = [`--window-size=${width},${height}`, `--headless=new`]
+    width = nochat ? 655 : 1175
+    height = 540
+    const args = [`--window-size=${width},${height}`]
     if (noaudio) args.push(`--mute-audio`)
 
     const browser = await launch({
         executablePath: require("puppeteer").executablePath(),
-        defaultViewport: {
-            width: 0,
-            height: 364,
-        },
+        defaultViewport: null,
         args: args,
     })
     if (links.length > 1 && (bulk === "all" || bulk > 1)) {
