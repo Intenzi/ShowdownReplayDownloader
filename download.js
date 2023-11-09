@@ -53,7 +53,7 @@ async function fixwebm(fileId) {
     })
 }
 
-async function download(link, browser, nomusic, noaudio, theme, speed) {
+async function download(link, browser, nochat, nomusic, noaudio, theme, speed) {
     if (
         !(
             link.startsWith("https://replay.pokemonshowdown.com/") ||
@@ -84,41 +84,50 @@ async function download(link, browser, nomusic, noaudio, theme, speed) {
         })
         await page.addStyleTag({
             content: `
-                .pfx-panel {
-                    position: absolute !important;
-                    top: -9px !important;
-                    left: -9px !important;
-                    height: auto !important;
-                    overflow: hidden auto !important;
-                    display: block !important;
-                    width: 1200px !important;
+                header {
+                    display: none !important;
+                }
+                .bar-wrapper {
+                    margin: 0 0 !important;
+                }
+                .battle {
+                    top: 0px !important;
+                    left: 0px !important;
+                    ${nochat ? "margin: 0 !important;" : ""}
+                }
+                .battle-log {
+                    top: 0px !important;
+                    left: 641px !important;
+                    ${nochat ? "display: none !important;" : ""}
                 }
                 `,
         })
         await page.waitForSelector(".playbutton")
         // Customization
-        // Default: music: yes, audio: yes, video: yes (why would anyone want to not record video..), speed: normal, color scheme: light, recordChat: yes
+        // Default: music: yes, audio: yes, video: yes (why would anyone want to not record video..), speed: normal, color scheme: automatic, recordChat: yes
         // Example for if you want your replay speed to be changed dynamically per individual video on total turns basis:-
         // if (totalTurns > 20) speed = "fast"
-        switch (speed) {
-            case "hyperfast":
-                await page.click('button[value="hyperfast"]')
-                break
-            case "fast":
-                await page.click('button[value="fast"]')
-                break
-            case "slow":
-                await page.click('button[value="slow"]')
-                break
-            case "reallyslow":
-                await page.click('button[value="reallyslow"]')
-                break
-        }
-        if (nomusic) await page.click('button[value="off"]')
-        if (theme === "dark") await page.click('button[value="dark"]')
+        if (speed !== "normal") await page.select('select[name="speed"]', speed)
 
+        if (nomusic) await page.select('select[name="sound"]', "musicoff")
+        else if (noaudio) await page.select('select[name="sound"]', "off")
+        // Theme
+        if (theme !== "auto")
+            await page.select('select[name="darkmode"]', theme)
+
+        // customization done, now remove scrollbar by making below elements invisible
+        await page.addStyleTag({
+            content: `
+                .replay-controls {
+                    display: none !important;
+                }
+                #LeaderboardBTF {
+                    display: none !important;
+                }
+                `,
+        })
         const stream = await getStream(page, {
-            audio: !noaudio,
+            audio: !noaudio, // no longer a necessity, can be left as true
             video: true,
         })
         await page.click('button[name="play"]')
@@ -180,7 +189,7 @@ const argv = yargs(process.argv.slice(2))
         demandOption: true,
     })
     .option("nomusic", {
-        describe: "Disable music",
+        describe: "Disable music (battle cries don't get muted)",
         type: "boolean",
         default: false,
     })
@@ -203,8 +212,8 @@ const argv = yargs(process.argv.slice(2))
     .option("theme", {
         alias: "t",
         describe: "Color Scheme",
-        choices: ["light", "dark"],
-        default: "light",
+        choices: ["auto", "dark", "light"],
+        default: "auto",
     })
     .option("bulk", {
         alias: "b",
@@ -258,10 +267,9 @@ const argv = yargs(process.argv.slice(2))
             )
     }
 
-    width = nochat ? 647 : 1187
-    height = 545
+    width = nochat ? 640 : 1100
+    height = 540 // 340 original (added +200 due to two chrome's popups 100h each of (a) -> download non-test version chrome and (b) -> Chrome is being controlled by automated test software)
     const args = [`--window-size=${width},${height}`, `--headless=new`]
-    if (noaudio) args.push(`--mute-audio`)
 
     const browser = await launch({
         executablePath: require("puppeteer").executablePath(),
@@ -276,7 +284,15 @@ const argv = yargs(process.argv.slice(2))
         for (let recordLinks of toRecord) {
             for (let link of recordLinks)
                 bulkRecord.push(
-                    download(link, browser, nomusic, noaudio, theme, speed)
+                    download(
+                        link,
+                        browser,
+                        nochat,
+                        nomusic,
+                        noaudio,
+                        theme,
+                        speed
+                    )
                 )
 
             await Promise.all(bulkRecord) // wait on all recordings to occur simultaneously
@@ -284,7 +300,15 @@ const argv = yargs(process.argv.slice(2))
         }
     } else {
         for (let link of links)
-            await download(link, browser, nomusic, noaudio, theme, speed) // record one by one
+            await download(
+                link,
+                browser,
+                nochat,
+                nomusic,
+                noaudio,
+                theme,
+                speed
+            ) // record one by one
     }
     console.log("Thankyou for utilising Showdown Replay Downloader!!")
     try {

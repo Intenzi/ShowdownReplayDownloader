@@ -96,20 +96,39 @@ module.exports = {
             })
             await page.addStyleTag({
                 content: `
-            .pfx-panel {
-                position: absolute !important;
-                top: -9px !important;
-                left: -9px !important;
-                height: auto !important;
-                overflow: hidden auto !important;
-                display: block !important;
-                width: 1200px !important;
-            }
-            `,
+                header {
+                    display: none !important;
+                }
+                .bar-wrapper {
+                    margin: 0 0 !important;
+                }
+                .battle {
+                    top: 0px !important;
+                    left: 0px !important;
+                    ${nochat ? "margin: 0 !important;" : ""}
+                }
+                .battle-log {
+                    top: 0px !important;
+                    left: 641px !important;
+                    ${nochat ? "display: none !important;" : ""}
+                }
+                `,
             })
             await page.waitForSelector(".playbutton")
             // change speed to fast when the video exceeds 20 turns
-            if (totalTurns > 20) await page.click('button[value="fast"]')
+            if (totalTurns > 20)
+                await page.select('select[name="speed"]', "fast")
+            // customization done, now remove scrollbar by making below elements invisible
+            await page.addStyleTag({
+                content: `
+                .replay-controls {
+                    display: none !important;
+                }
+                #LeaderboardBTF {
+                    display: none !important;
+                }
+                `,
+            })
             const stream = await getStream(page, {
                 audio: true,
                 video: true,

@@ -38,7 +38,7 @@ client.once(Events.ClientReady, async () => {
             width: 0,
             height: 364,
         },
-        args: [`--window-size=1187,545`, `--headless=new`],
+        args: [`--window-size=1100,540`, `--headless=new`],
     })
     console.log("Launched!")
 })
